@@ -38,42 +38,13 @@ public class SignUp extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		
-		 // Retrieve patient data from HTML form
-		PrintWriter pw= response.getWriter();
-		
-		Map m=request.getParameterMap();
-        Set s = m.entrySet();
-        Iterator it = s.iterator();
-
-            while(it.hasNext()){
-
-                Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>)it.next();
-
-                String key             = entry.getKey();
-                String[] value         = entry.getValue();
-
-                pw.println("Key is "+key+"<br>");
-
-                    if(value.length>1){    
-                        for (int i = 0; i < value.length; i++) {
-                            pw.println("<li>" + value[i].toString() + "</li><br>");
-                        }
-                    }else
-                            pw.println("Value is "+value[0].toString()+"<br>");
-
-                    pw.println("-------------------<br>");
-            }
-
-        pw.close();    
+   
 		
 		
 		String firstName = request.getParameter("firstName");
 	    String lastName = request.getParameter("lastName");
-	    String dobStr = request.getParameter("dob"); // Assuming date of birth as a String
-	    // Retrieve other form fields similarly...
+	    String dobStr = request.getParameter("dob"); 
 	    String country = request.getParameter("country");
-
-	    // Create local variables to store parameter values
 	    String genderParam = request.getParameter("gender");
 	    String addressParam = request.getParameter("address");
 	    String cityParam = request.getParameter("city");
@@ -81,13 +52,9 @@ public class SignUp extends HttpServlet {
 	    String zipCodeParam = request.getParameter("zipCode");
 	    String emailParam = request.getParameter("email");
 	    String phoneNumberParam = request.getParameter("phoneNumber");
-
-	    // Create a new Patient object and set the retrieved data
 	    Patient patient = new Patient();
 	    patient.setFirstName(firstName);
 	    patient.setLastName(lastName);
-
-	    // Parse date string to java.sql.Date (if applicable)
 	    Date dob = null;
 	    try {
 	        LocalDate dobLocal = LocalDate.parse(dobStr); // Use appropriate date parsing based on your date format
@@ -116,18 +83,7 @@ public class SignUp extends HttpServlet {
 	}
 	   
 	    
-	    System.out.println("Received Patient Data:");
-	    System.out.println("First Name: " + firstName);
-	    System.out.println("Last Name: " + lastName);
-	    System.out.println("Date of Birth: " + dob);
-	    System.out.println("Gender: " + genderParam);
-	    System.out.println("Address: " + addressParam);
-	    System.out.println("City: " + cityParam);
-	    System.out.println("State: " + stateParam);
-	    System.out.println("Zip Code: " + zipCodeParam);
-	    System.out.println("Country: " + country);
-	    System.out.println("Email: " + emailParam);
-	    System.out.println("Phone Number: " + phoneNumberParam);
+
 	    
 	    
 	    
