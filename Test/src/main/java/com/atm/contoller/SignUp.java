@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -16,6 +17,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Base32;
+
 import com.atm.config.DBConfig;
 import com.atm.dao.User;
 import com.atm.pojo.Patient;
@@ -24,6 +27,15 @@ import com.atm.pojo.Patient;
  * Servlet implementation class SignUp
  */
 public class SignUp extends HttpServlet {
+	
+	public static String generateSecretKey() {
+	    SecureRandom random = new SecureRandom();
+	    byte[] bytes = new byte[20];
+	    random.nextBytes(bytes);
+	    Base32 base32 = new Base32();
+	    System.out.println(base32.encodeToString(bytes));
+	    return base32.encodeToString(bytes);
+	}
 	private static final long serialVersionUID = 1L;
        
 	DBConfig getCon= new DBConfig();
@@ -35,11 +47,9 @@ public class SignUp extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		
-   
-		
+		this.generateSecretKey();
 		
 		String firstName = request.getParameter("firstName");
 	    String lastName = request.getParameter("lastName");
