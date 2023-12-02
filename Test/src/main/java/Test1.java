@@ -28,7 +28,6 @@ public class Test1 {
 	
 	final static String SECRETE_KEY="4RAUYVPUWRVKLSCTG2CSPHSJGHJ43TU3";
 	
-	
 	/**
 	 * This function is use to retrive data from DB using JDBC which is configure in 
 	 * com.atm.config.DBConfig class
@@ -77,6 +76,11 @@ public class Test1 {
 		return mailandFullName;
 	}
 	
+	
+	/**
+	 * This method is use to generate A key which will be used as key in TOTP.gerOPT
+	 * @return String encoded random hex value with base 32;
+	 * */
 	public static String generateSecretKey() {
 	    SecureRandom random = new SecureRandom();
 	    byte[] bytes = new byte[20];
@@ -85,6 +89,9 @@ public class Test1 {
 	    return base32.encodeToString(bytes);
 	}
 	
+	/**
+	 * @param SECRETE_KEY - this is use to generate the ramdom key OTP for authentication .
+	 * */
 	public static String getTOTPCode(String SECRETE_KEY) {
 	    Base32 base32 = new Base32();
 	    byte[] bytes = base32.decode(SECRETE_KEY);
@@ -92,51 +99,37 @@ public class Test1 {
 	    return TOTP.getOTP(hexKey);
 	}
 	
+	/**
+	 * This method use to get the get Google Authenticator Url set in QRCode  
+	 */
 	public static String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
 		try {
-	        if (issuer == null) {
-	            issuer = "";
-	        }
-	        if (account == null) {
-	            account = "";
-	        }
-	        if (secretKey == null) {
-	            secretKey = "";
-	        }
-	        
-	        return "otpauth://totp/"
-	                + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
-	                + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
-	                + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
+	        String AuthenticatorBarCodeURL = "otpauth://totp/"
+            + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
+            + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
+            + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
+	        return AuthenticatorBarCodeURL;
 	    } catch (UnsupportedEncodingException e) {
 	        throw new IllegalStateException(e);
-	    }
+	    }catch (NullPointerException e) {
+			System.out.println("Please Provide correct email or phone number to get verified.");
+			e.printStackTrace();
+			throw new NullPointerException ();
+		}
 	}
-
+	
+	/**
+	 * use to create a barcode png format image
+	 * */
 	public static void createQRCode(String mail,String barCodeData, String filePath, int height, int width)
 	        throws WriterException, IOException {
 	    BitMatrix matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE,
 	            width, height);
-	    try (FileOutputStream out = new FileOutputStream("C:\\Users\\atulm\\Desktop\\Depe\\Test\\" + mail)) {
+	    try (FileOutputStream out = new FileOutputStream("C:\\Users\\atulm\\Desktop\\Depe\\Test\\" + mail+".png")) {
 	        MatrixToImageWriter.writeToStream(matrix, "png", out);
 	    }
 	}
 	
-	
-//	public static String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
-//	    try {
-//	    	System.out.println("otpauth://totp/"
-//	                + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
-//	                + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
-//	                + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20"));
-//	        return "otpauth://totp/"
-//	                + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
-//	                + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
-//	                + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
-//	    } catch (UnsupportedEncodingException e) {
-//	        throw new IllegalStateException(e);
-//	    }
-//	}
 
 	public static void main(String[] args) throws SQLException, WriterException, IOException {
 		// TODO Auto-generated method stub
@@ -144,7 +137,7 @@ public class Test1 {
 		DBConfig dbconfig=new DBConfig();
 		Connection con=dbconfig.GetMysqlCon();
 		Map<String, String> name=g.getPatientMailAdressAndName(con,"jforxcea@gmail.com","atul MOurya");
-		String autData=g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullNamej"));
+		String autData=g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullName"));
 		
 		System.out.println(g.generateSecretKey());
 		System.out.println(g.getTOTPCode(Test1.SECRETE_KEY));

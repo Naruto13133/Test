@@ -16,6 +16,7 @@ public class Patient {
     private String email;
     private String phoneNumber;
     private String country;
+    private String secretKey;
 
     // Constructors
     public Patient() {
@@ -23,7 +24,7 @@ public class Patient {
     }
 
     public Patient(int patientID, String firstName, String lastName, Date dateOfBirth, String gender,
-                   String address, String city, String state, String zipCode, String email, String phoneNumber ,String country) {
+                   String address, String city, String state, String zipCode, String email, String phoneNumber ,String country, String secretKey ) {
         this.patientID = patientID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,6 +37,7 @@ public class Patient {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.country = country;
+        this.secretKey=secretKey ;
     }
 
     // Getters and Setters for all fields
@@ -152,6 +154,15 @@ public class Patient {
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", country ='" + country + '\'' +
+                ", secretKey  ='" + secretKey  + '\'' +
                 '}';
     }
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
 }

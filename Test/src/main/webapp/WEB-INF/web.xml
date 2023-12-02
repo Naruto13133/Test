@@ -17,6 +17,16 @@
     <servlet-name>add</servlet-name>
     <url-pattern>/add</url-pattern>
   </servlet-mapping>
+  
+    <servlet>
+    <servlet-name>Signupp</servlet-name>
+    <servlet-class>com.atm.contoller.SignUpp</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Signupp</servlet-name>
+    <url-pattern>/signu</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <description></description>
     <display-name>GetSq</display-name>
