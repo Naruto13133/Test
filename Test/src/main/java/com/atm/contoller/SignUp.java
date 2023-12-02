@@ -22,34 +22,27 @@ import org.apache.commons.codec.binary.Base32;
 import com.atm.config.DBConfig;
 import com.atm.dao.User;
 import com.atm.pojo.Patient;
-
+import com.atm.dao.*; 
+import com.atm.service.*;
+import com.google.zxing.WriterException;
 /**
  * Servlet implementation class SignUp
  */
 public class SignUp extends HttpServlet {
 	
-	public static String generateSecretKey() {
-	    SecureRandom random = new SecureRandom();
-	    byte[] bytes = new byte[20];
-	    random.nextBytes(bytes);
-	    Base32 base32 = new Base32();
-	    System.out.println(base32.encodeToString(bytes));
-	    return base32.encodeToString(bytes);
-	}
+
 	private static final long serialVersionUID = 1L;
-       
+    
+	 
+	
 	DBConfig getCon= new DBConfig();
 	User userDao= new User();
 	Patient patient= new Patient();
 	
-    public SignUp() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-		
-		this.generateSecretKey();
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String firstName = request.getParameter("firstName");
 	    String lastName = request.getParameter("lastName");
@@ -85,90 +78,28 @@ public class SignUp extends HttpServlet {
 	    patient.setPhoneNumber(phoneNumberParam);
 	    patient.setCountry(country);
 	    
-	   Connection con= getCon.GetMysqlCon();
-	   try {
-		int i=userDao.CreateUser(con,patient);
-	} catch (SQLException e) {
-			e.printStackTrace();
-	}
-	
-	}
-
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		 // Retrieve patient data from HTML form
-		String firstName = request.getParameter("firstName");
-	    String lastName = request.getParameter("lastName");
-	    String dobStr = request.getParameter("dob"); // Assuming date of birth as a String
-	    // Retrieve other form fields similarly...
-	    String country = request.getParameter("country");
-
-	    // Create local variables to store parameter values
-	    String genderParam = request.getParameter("gender");
-	    String addressParam = request.getParameter("address");
-	    String cityParam = request.getParameter("city");
-	    String stateParam = request.getParameter("state");
-	    String zipCodeParam = request.getParameter("zipCode");
-	    String emailParam = request.getParameter("email");
-	    String phoneNumberParam = request.getParameter("phoneNumber");
-
-	    // Create a new Patient object and set the retrieved data
-	    Patient patient = new Patient();
-	    patient.setFirstName(firstName);
-	    patient.setLastName(lastName);
-
-	    // Parse date string to java.sql.Date (if applicable)
-	    Date dob = null;
-	    try {
-	        LocalDate dobLocal = LocalDate.parse(dobStr); // Use appropriate date parsing based on your date format
-	        dob = Date.valueOf(dobLocal);
-	    } catch (DateTimeParseException e) {
-	        // Handle date parsing exception
-	        e.printStackTrace();
-	    }
-	    patient.setDateOfBirth(dob);
-
-	    // Set other fields using local variables
-	    patient.setGender(genderParam);
-	    patient.setAddress(addressParam);
-	    patient.setCity(cityParam);
-	    patient.setState(stateParam);
-	    patient.setZipCode(zipCodeParam);
-	    patient.setEmail(emailParam);
-	    patient.setPhoneNumber(phoneNumberParam);
-	    patient.setCountry(country);
 	    
 	   Connection con= getCon.GetMysqlCon();
 	   try {
-		int i=userDao.CreateUser(con,patient);
-	} catch (SQLException e) {
-			e.printStackTrace();
-	}
-	   
-	    
-	    System.out.println("Received Patient Data:");
-	    System.out.println("First Name: " + firstName);
-	    System.out.println("Last Name: " + lastName);
-	    System.out.println("Date of Birth: " + dob);
-	    System.out.println("Gender: " + genderParam);
-	    System.out.println("Address: " + addressParam);
-	    System.out.println("City: " + cityParam);
-	    System.out.println("State: " + stateParam);
-	    System.out.println("Zip Code: " + zipCodeParam);
-	    System.out.println("Country: " + country);
-	    System.out.println("Email: " + emailParam);
-	    System.out.println("Phone Number: " + phoneNumberParam);
-	    
-	    
-	    
+		   String secretekey=TwoStepVerificationService.generateSecretKey();
+			patient.setSecretKey(secretekey);
+		int created=userDao.CreateUser(con,patient);
 		
+		TwoStepAuthDao tsaDao = new TwoStepAuthDao();
+		if (created != 1) 
+		    {
+		    	//response.sendRedirect("/");
+		    	throw new NullPointerException();
+		    }
+		    else {
+		    	String secreteUrl = TwoStepVerificationService.getGoogleAuthenticatorBarCode(secretekey, patient.getEmail(), patient.getPhoneNumber());
+		    	TwoStepVerificationService.createQRCode(patient.getFirstName()+" "+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
+		    	//response.sendRedirect("");
+			}
+		}catch (SQLException | WriterException | NullPointerException e) {
+			e.printStackTrace();
+			//response.sendRedirect("" );
+	}
 	}
 
 }
