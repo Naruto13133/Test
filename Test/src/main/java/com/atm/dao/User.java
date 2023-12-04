@@ -25,8 +25,8 @@ public class User {
 	            // ...
 
 	            // SQL query to insert patient data
-	            String sql = "INSERT INTO patient (first_name, last_name, dob, gender, address, city, state, zip_code, country, email, phone_number ,secure_hash) " +
-	                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	            String sql = "INSERT INTO patient (first_name, last_name, dob, gender, address, city, state, zip_code, country, email, phone_number ,secure_hash,password) " +
+	                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	            // Create PreparedStatement
 	            preparedStatement = con.prepareStatement(sql);
@@ -44,6 +44,7 @@ public class User {
 	            preparedStatement.setString(10, patient.getEmail());
 	            preparedStatement.setString(11, patient.getPhoneNumber());
 	            preparedStatement.setString(12, patient.getSecretKey());
+	            preparedStatement.setString(13, patient.getPassword());
 
 	            // Execute the query
 	            int rowsAffected = preparedStatement.executeUpdate();
@@ -126,6 +127,33 @@ public class User {
 		}
 		return mailandFullName;
 	}
-	
+
+	public int isAuthenticated(String email, String phone , Connection con) throws SQLException{
+		int i=0;
+		String query="Select (IFNULL(is_authenticated, 'N')) as auth "
+					+ "from ayurveda.patient  "
+					+ "where 1=1 "
+					+ "and ( email= ? OR phone = ? )";
+		PreparedStatement statement = con.prepareStatement(query);
+		statement.setString(0, email);
+		statement.setString(0, phone);
+		System.out.println(query);
+		try {
+			ResultSet rs=statement.executeQuery(query);
+			if (rs.next()) {
+			    i=1;
+			} else {
+			    System.out.println("No data found.");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			statement.close();
+			con.close();
+		}
+		return i;
+	}
 }
 

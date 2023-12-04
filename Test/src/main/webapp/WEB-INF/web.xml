@@ -19,6 +19,15 @@
   </servlet-mapping>
   
     <servlet>
+    <servlet-name>Authentication</servlet-name>
+    <servlet-class>com.atm.contoller.AuthenticatorController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Authentication</servlet-name>
+    <url-pattern>/checkauthentication</url-pattern>
+  </servlet-mapping>
+  
+    <servlet>
     <servlet-name>Signupp</servlet-name>
     <servlet-class>com.atm.contoller.SignUpp</servlet-class>
   </servlet>

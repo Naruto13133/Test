@@ -1,5 +1,6 @@
 package com.atm.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -17,6 +18,9 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
 import de.taimos.totp.TOTP;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 
@@ -88,7 +92,27 @@ public class TwoStepVerificationService {
 			}
 		}
 	
-		
+
+		public static ByteArrayOutputStream imageBydeData(String URLString) throws ServletException, IOException {
+	        
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        try {
+	            BitMatrix bitMatrix = new MultiFormatWriter().encode(URLString, BarcodeFormat.QR_CODE, 300, 300);
+
+	            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out);
+	            
+	            
+	            // Set response content type to image
+//	            response.setContentType("image/png");
+//	            // Write the image data to the client
+//	            response.getOutputStream().write(out.toByteArray());
+//	            response.getOutputStream().flush();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            
+	        }
+	        return out;
+	    }
 
 
 }

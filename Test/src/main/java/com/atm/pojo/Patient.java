@@ -17,6 +17,9 @@ public class Patient {
     private String phoneNumber;
     private String country;
     private String secretKey;
+    private String password;
+    private String isAuthenticated;
+    
 
     // Constructors
     public Patient() {
@@ -24,7 +27,8 @@ public class Patient {
     }
 
     public Patient(int patientID, String firstName, String lastName, Date dateOfBirth, String gender,
-                   String address, String city, String state, String zipCode, String email, String phoneNumber ,String country, String secretKey ) {
+                   String address, String city, String state, String zipCode, String email, String phoneNumber ,
+                   String country, String secretKey , String password, String isAuthenticated ) {
         this.patientID = patientID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -38,6 +42,8 @@ public class Patient {
         this.phoneNumber = phoneNumber;
         this.country = country;
         this.secretKey=secretKey ;
+        this.password = password ;
+        this.isAuthenticated = isAuthenticated;
     }
 
     // Getters and Setters for all fields
@@ -155,6 +161,7 @@ public class Patient {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", country ='" + country + '\'' +
                 ", secretKey  ='" + secretKey  + '\'' +
+                ", password  ='" + password  + '\'' +
                 '}';
     }
 
@@ -164,5 +171,21 @@ public class Patient {
 
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getIsAuthenticated() {
+		return isAuthenticated;
+	}
+
+	public void setIsAuthenticated(String isAuthenticated) {
+		this.isAuthenticated = isAuthenticated;
 	}
 }

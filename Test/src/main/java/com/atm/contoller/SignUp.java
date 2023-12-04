@@ -93,10 +93,10 @@ public class SignUp extends HttpServlet {
 		    }
 		    else {
 		    	String secreteUrl = TwoStepVerificationService.getGoogleAuthenticatorBarCode(secretekey, patient.getEmail(), patient.getPhoneNumber());
-		    	TwoStepVerificationService.createQRCode(patient.getFirstName()+" "+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
+		    	//TwoStepVerificationService.createQRCode(patient.getFirstName()+" "+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
 		    	//response.sendRedirect("");
 			}
-		}catch (SQLException | WriterException | NullPointerException e) {
+		}catch (SQLException | NullPointerException e) {
 			e.printStackTrace();
 			//response.sendRedirect("" );
 	}

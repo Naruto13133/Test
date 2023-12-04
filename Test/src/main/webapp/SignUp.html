@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h2>Patient Signup</h2>
-        <form action="signu" method="post">
+        <form action="signu" method="post" id="sign_up_form">
             <label for="firstName">First Name:</label>
             <input type="text" id="firstName" name="firstName" required><br><br>
 
@@ -49,7 +49,15 @@
             <label for="phoneNumber">Phone Number:</label>
             <input type="tel" id="phoneNumber" name="phoneNumber" required><br><br>
             
-            
+            <label for="password">Enter Password:</label>
+    		<input type="password" id="password" name="password">
+    		<br>
+    		<label for="confirmPassword">Re-enter Password:</label>
+    		<input type="password" id="confirmPassword" name="confirmPassword">
+    		<br>
+    		<span id="error" class="error"></span>
+    		<br>
+            <br><br>
 
             <input type="submit" value="Submit">
         </form>

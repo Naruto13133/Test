@@ -20,16 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
-
+	   
       if (password !== confirmPassword) {
         errorSpan.textContent = 'Passwords do not match.';
+        alert('Passwords do not match.');
       } else if (password.length < 8) {
         errorSpan.textContent = 'Password should be at least 8 characters long.';
       } else {
-        errorSpan.textContent = '';
-        alert('Passwords match!');
+        errorSpan.textContent = 'Password Is Matched !';
+        form.submit();
         // Here you can perform further actions with the valid passwords
-      }});
+      }
+      
+      });
 
 
     fetch('https://restcountries.com/v2/all') // Fetching country data from the API

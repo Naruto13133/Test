@@ -14,6 +14,7 @@ import com.atm.pojo.Patient;
 import com.atm.service.TwoStepVerificationService;
 import com.google.zxing.WriterException;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ public class SignUpp extends HttpServlet {
 	DBConfig getCon= new DBConfig();
 	User userDao= new User();
 	Patient patient= new Patient();
+	 final static String  AUTHENTICATION_PAGE = "/Authenticate.jsp";
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -38,6 +40,7 @@ public class SignUpp extends HttpServlet {
 	    String zipCodeParam = request.getParameter("zipCode");
 	    String emailParam = request.getParameter("email");
 	    String phoneNumberParam = request.getParameter("phoneNumber");
+	    String password = request.getParameter("password");
 	    Patient patient = new Patient();
 	    patient.setFirstName(firstName);
 	    patient.setLastName(lastName);
@@ -60,6 +63,7 @@ public class SignUpp extends HttpServlet {
 	    patient.setEmail(emailParam);
 	    patient.setPhoneNumber(phoneNumberParam);
 	    patient.setCountry(country);
+	    patient.setPassword(password);
 	    
 	    
 	   Connection con= getCon.GetMysqlCon();
@@ -76,12 +80,25 @@ public class SignUpp extends HttpServlet {
 		    }
 		    else {
 		    	String secreteUrl = TwoStepVerificationService.getGoogleAuthenticatorBarCode(secretekey, patient.getEmail(), patient.getPhoneNumber());
-		    	TwoStepVerificationService.createQRCode(patient.getFirstName()+" "+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
+		    	TwoStepVerificationService.createQRCode(patient.getFirstName()+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
 		    	//response.sendRedirect("");
+		    	RequestDispatcher dispatcher = request.getRequestDispatcher( AUTHENTICATION_PAGE );
+		    	request.setAttribute("patient", patient);
+		    	request.setAttribute("secretekey", secretekey);
+		        // Forward the request to another servlet or JSP
+		        dispatcher.forward(request, response);
+		        
 			}
-		}catch (SQLException | WriterException | NullPointerException e) {
+		}catch (SQLException | NullPointerException | WriterException e) {
 			e.printStackTrace();
 			//response.sendRedirect("" );
+	}finally {
+		try {
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	}
 	

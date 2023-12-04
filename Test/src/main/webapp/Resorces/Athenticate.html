@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Two-Step Authentication</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Two-Step Authentication</h1>
+  
+    <!-- QR Code Image -->
+    <div class="qr-code">
+      <img id="qrCodeImage" alt="QR Code Image" width="200" height="200">
+    </div>
+  
+    <!-- OTP Input Field and Submit Button -->
+    <form action="submit_action_here" method="post">
+      <label for="otp">Enter OTP:</label>
+      <input type="text" id="otp" name="otp" required>
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+<script>
+	window.onload = function() {
+  // Image URL for the QR code
+  var imageUrl = 'path_to_your_qr_code_image.png';
+
+  // Get the image element
+  var qrCodeImage = document.getElementById('qrCodeImage');
+
+  // Set the image source dynamically
+  qrCodeImage.src = imageUrl;
+};
+</script>
+</html>
