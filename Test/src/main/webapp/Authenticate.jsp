@@ -27,6 +27,7 @@
 			break;
 		}else if(! sessionParameters.hasMoreElements()) {
 			break;
+			
 		}
 	}
 	if(! originFromLogin){
