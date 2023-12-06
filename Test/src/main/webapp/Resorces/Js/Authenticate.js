@@ -6,5 +6,6 @@ window.onload = function() {
   var qrCodeImage = document.getElementById('qrCodeImage');
 
   // Set the image source dynamically
-  qrCodeImage.src = imageUrl;
+var baseStr64="";
+qrCodeImage.setAttribute('src', "data:image/jpg;base64," + baseStr64);
 };

@@ -79,20 +79,17 @@ public class SignUp extends HttpServlet {
 	    patient.setCountry(country);
 	    
 	    
-	   Connection con= getCon.GetMysqlCon();
 	   try {
 		   String secretekey=TwoStepVerificationService.generateSecretKey();
 			patient.setSecretKey(secretekey);
-		int created=userDao.CreateUser(con,patient);
+		int created=userDao.CreateUser(patient);
 		
-		TwoStepAuthDao tsaDao = new TwoStepAuthDao();
 		if (created != 1) 
 		    {
 		    	//response.sendRedirect("/");
 		    	throw new NullPointerException();
 		    }
 		    else {
-		    	String secreteUrl = TwoStepVerificationService.getGoogleAuthenticatorBarCode(secretekey, patient.getEmail(), patient.getPhoneNumber());
 		    	//TwoStepVerificationService.createQRCode(patient.getFirstName()+" "+patient.getLastName() ,patient.getPhoneNumber(),secreteUrl);
 		    	//response.sendRedirect("");
 			}

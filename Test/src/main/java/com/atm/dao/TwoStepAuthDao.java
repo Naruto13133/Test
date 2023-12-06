@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.atm.service.*;
 
 import org.apache.tomcat.jakartaee.commons.lang3.StringUtils;
@@ -12,62 +14,76 @@ import com.atm.config.DBConfig;
 
 public class TwoStepAuthDao {
 
-	DBConfig dbConfig = new DBConfig();
+	static DBConfig dbConfig = new DBConfig();
 	
 	
-	
-	public String getSecureHashUsingEmailnPohne(String email, String phone) {
+	public String getSecureHashUsingEmailnPohne(String email, String phone ) throws SQLException {
 		String secure_hash=""; 
 		Connection con = dbConfig.GetMysqlCon();
-		String sql = "select secure_hash from ayurveda.patient where 1=1  ";
 		try {
-			PreparedStatement S = con.prepareStatement(sql);
-			if ((email == null || email.isEmpty())) {
-				S.setString(1, sql);
-				sql = sql + "and email = ? ";
-			}if ((phone == null || phone.isEmpty())) {
-				phone = "and phone = ? ";
-				S.setString(2, sql);
+			String sql = "select secure_hash from ayurveda.patient where email = ? and phone_number = ? ";
+		
+			PreparedStatement ps= con.prepareStatement(sql);
+			ps.setString(1, email);
+			ps.setString(2, phone);
+		
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				secure_hash = rs.getString("secure_hash");	
+				}
 			}
-		ResultSet rs= S.executeQuery();
-		secure_hash = rs.getString("secure_hash");
-		}
-		catch (SQLException e) {
+		catch (SQLException | NullPointerException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (NullPointerException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			e1.printStackTrace();
+		}
+		finally {
+			con.close();
 		}
 		return secure_hash;
 	}
-	
-	public Boolean storeSecureHashUsingEmailnPhone(String email, String phone, String secretKey  ) {
+
+	public Boolean storeSecureHashUsingEmailnPhone(String email, String phone, String secretKey ) throws SQLException {
 		
 		Connection con = dbConfig.GetMysqlCon();
-		String sql = "update secure_hash = '"+secretKey+"' from ayurveda.patient where 1=1  ";
+		String sql = "update secure_hash = ? from ayurveda.patient where  phone_number = ? and email = ? ";
+		boolean result = true;
 		try {
 			PreparedStatement S = con.prepareStatement(sql);
-			if ((email == null || email.isEmpty())) {
-				sql = sql + "and email = ? ";
-				S.setString(1, sql);
-			}if ((phone == null || phone.isEmpty())) {
-				phone = "and phone = ? ";
-				S.setString(2, sql);
-			}
-		int rs= S.executeUpdate();
-		if ( rs >= 1 ) {
-			return true;
+				S.setString(1,secretKey);
+				S.setString(2, email);
+				S.setString(3, phone);
 		}
-		}
-		catch (SQLException e) {
+		catch (SQLException | NullPointerException e) {
 			// TODO Auto-generated catch block
+			con.rollback();
 			e.printStackTrace();
-		}catch (NullPointerException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			result = false;
+		}finally {
+			
+			con.close();
 		}
-		return false;
+		return result;
 		
 	}
+	public Boolean updateAuthenticationStatus(String email, String phone) throws SQLException {
+		Connection con = dbConfig.GetMysqlCon();
+		String sql = "update is_authenticated = Y from ayurveda.patient where  phone_number = ? and email = ? ";
+		boolean result = true;
+		try {
+			PreparedStatement S = con.prepareStatement(sql);
+				S.setString(1, email);
+				S.setString(2, phone);
+		}
+		catch (SQLException | NullPointerException e) {
+			// TODO Auto-generated catch block
+			con.rollback();
+			e.printStackTrace();
+			result = false;
+		}finally {
+			con.close();
+		}
+		return result;
+	}
+	
+	
 }

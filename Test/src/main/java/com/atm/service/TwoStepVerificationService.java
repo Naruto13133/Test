@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
-
+import java.util.Base64;
 
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
@@ -112,6 +112,21 @@ public class TwoStepVerificationService {
 	            
 	        }
 	        return out;
+	    }
+
+		
+public static String base64StringFromByte(ByteArrayOutputStream byteData) throws ServletException, IOException {
+	        
+	        String result="";
+	        try {
+	            byte[] encode = Base64.getEncoder().encode(byteData.toByteArray());
+	            result = new String(encode);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            
+	        }
+	        return result;
+			
 	    }
 
 

@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 
 import com.atm.config.DBConfig;
+import com.atm.dao.TwoStepAuthDao;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -133,6 +134,9 @@ public class Test1 {
 
 	public static void main(String[] args) throws SQLException, WriterException, IOException {
 		// TODO Auto-generated method stub
+		
+//		boolean a=new TwoStepAuthDao().storeSecureHashUsingEmailnPhone("atul@123.gmail.c","08828554466", "QCNXPDVBBWQF7WG2SZ3UZ7UTBORNUQ6J");
+//		System.out.println(a);
 		Test1 g=new Test1();
 		DBConfig dbconfig=new DBConfig();
 		Connection con=dbconfig.GetMysqlCon();

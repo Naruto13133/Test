@@ -1,10 +1,13 @@
 package com.atm.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
 import com.atm.config.*;
@@ -12,11 +15,14 @@ import com.atm.pojo.Patient;
 
 public class User {
 	
+	public String secketkey;
+	static DBConfig dbconfig = new DBConfig(); 
 	/**
 	 * @throws SQLException 
 	 * */
-	public int CreateUser(Connection con, Patient patient) throws SQLException 
+	public int CreateUser( Patient patient) throws SQLException 
 	{
+		Connection con = dbconfig.GetMysqlCon();
 		int created=0;
 		 PreparedStatement preparedStatement = null;
 
@@ -57,6 +63,7 @@ public class User {
 
 	        } catch (Exception e) {
 	            e.printStackTrace();
+	            con.rollback();
 	        } finally {
 	        	preparedStatement.close();
 	        	con.close(); 
@@ -65,18 +72,18 @@ public class User {
 		return created;
 	}
 	
-	public boolean CheckUser(Connection con) {
-		
+	public boolean CheckUser() {
+//		Connection con = dbconfig.GetMysqlCon();
 		return false;
 	}
 	
-	public boolean InsertPatientDosha(Connection con) {
-		
+	public boolean InsertPatientDosha() {
+//		Connection con = dbconfig.GetMysqlCon();
 		return false;
 	}
 
-	public boolean RetrivePatientDosha(Connection con) {
-		
+	public boolean RetrivePatientDosha() {
+//		Connection con = dbconfig.GetMysqlCon();
 		return false;
 	}
 	
@@ -91,7 +98,8 @@ public class User {
 	 * @return HashMap<String, String> mailandFullName where,
 	 *  keys are "mail" and "fullName".
 	 * */
-	public HashMap<String, String>  getPatientMailAdressAndName(Connection con,String umail,String Uphone) throws SQLException {
+	public HashMap<String, String>  getPatientMailAdressAndName(String umail,String Uphone) throws SQLException {
+		Connection con = dbconfig.GetMysqlCon();
 		java.sql.Statement statement = con.createStatement();
 		
 		HashMap<String, String> mailandFullName =new HashMap<String, String>();
@@ -127,17 +135,25 @@ public class User {
 		}
 		return mailandFullName;
 	}
-
-	public int isAuthenticated(String email, String phone , Connection con) throws SQLException{
+	
+	/**
+	 *this method is use to check if user is authenticate  
+	 *and return 1 and 0 if present and not present in data base
+	 * @param Connection con object for setting up the connection to db and 
+	 * @param String email or 
+	 * @param String phone to check user presents- email 
+	 * 
+	 * @return int i
+	 * 
+	 * */
+	public int isAuthenticated(String email, String phone ) throws SQLException{
+		Connection con = dbconfig.GetMysqlCon();
 		int i=0;
 		String query="Select (IFNULL(is_authenticated, 'N')) as auth "
 					+ "from ayurveda.patient  "
-					+ "where 1=1 "
-					+ "and ( email= ? OR phone = ? )";
-		PreparedStatement statement = con.prepareStatement(query);
-		statement.setString(0, email);
-		statement.setString(0, phone);
-		System.out.println(query);
+					+ "where  email = \'"+email+"\' and is_authenticated = 'Y' ";
+			System.out.println("query:");		
+			Statement  statement = con.createStatement();
 		try {
 			ResultSet rs=statement.executeQuery(query);
 			if (rs.next()) {
@@ -154,6 +170,67 @@ public class User {
 			con.close();
 		}
 		return i;
+	}
+
+	public boolean isUserPresent( String email) throws SQLException {
+		Connection con = dbconfig.GetMysqlCon();
+		boolean result = true;
+		String sql = "select email from ayurveda.patient where email = ? ";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+		}catch(Exception e) {
+			result = false;
+			con.rollback();
+			e.printStackTrace();
+		}finally {
+			con.close();
+		}
+		return result;
+	}
+	
+	public Patient getPatiest( String email) throws SQLException{
+		Connection con = dbconfig.GetMysqlCon();
+		String q = "select * from ayurveda.patient where email = \'"+email+"\'";
+		Patient patient=new Patient();
+		try {
+			
+			Statement s=con.createStatement();
+			
+			ResultSet rs = s.executeQuery(q);
+			if(rs.next()) {
+				patient.setFirstName(rs.getString("first_name"));
+			    patient.setLastName(rs.getString("last_name"));
+			    Date dob = null;
+			    try {
+			        LocalDate dobLocal = LocalDate.parse(rs.getString("dob")); // Use appropriate date parsing based on your date format
+			        dob = Date.valueOf(dobLocal);
+			    }
+			    catch (DateTimeParseException e) {
+			        // Handle date parsing exception
+			        e.printStackTrace();
+			    }
+			    patient.setDateOfBirth(dob);
+
+			    // Set other fields using local variables
+			    patient.setGender(rs.getString("gender"));
+			    patient.setAddress(rs.getString("address"));
+			    patient.setCity(rs.getString("city"));
+			    patient.setState(rs.getString("state"));
+			    patient.setZipCode(rs.getString("zip_code"));
+			    patient.setEmail(rs.getString("email"));
+			    patient.setPhoneNumber(rs.getString("phone_number"));
+			    patient.setCountry(rs.getString("country"));
+			    patient.setPassword(rs.getString("password"));
+			    patient.setSecretKey(rs.getString("secure_hash"));
+			    patient.setIsAuthenticated(rs.getString("is_authenticated"));
+			}
+		}catch(Exception e) {
+		
+			con.close();
+		}
+		System.out.println("patient:"+ patient);
+		return patient;
 	}
 }
 

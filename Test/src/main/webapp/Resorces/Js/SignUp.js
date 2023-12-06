@@ -3,20 +3,35 @@
  */
 
 	      
-
+const  strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 document.addEventListener('DOMContentLoaded', () => {
+	
+
+	const searchParams = new URLSearchParams(window.location.search);
+	if(searchParams.has('userpresent')){
+	alert("User is present please use different email !");	
+	}
+
+	
     const selectDrop = document.querySelector('#country');
 	const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
     const errorSpan = document.getElementById('error');
     const form = document.getElementById('sign_up_form');
 	
+	function isPasswordStrong(passwordInput){
+		var a = strongPasswordRegex.test(passwordInput);
+		return a;
+	}
+	
     form.addEventListener('submit', (event) => {
       event.preventDefault(); // Prevent form submission
 	console.log(passwordInput);
 	console.log(confirmPasswordInput);
 	console.log(errorSpan);
-	
+		if(! isPasswordStrong){
+			alert("A strong password typically includes a combination of uppercase and lowercase letters, numbers, and special characters.");
+		}
 
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;

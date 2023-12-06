@@ -3,20 +3,23 @@
 <head>
 	<link rel="stylesheet" href="Resorces/CSS/Login.css">
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>LoginPage</title>
+
 </head>
 <body>
-	<form action="add" method="post">
+	
+	<h4 id="authenticate" ></h4>
+	<form action="login" method="post">
   <div class="imgcontainer">
     <img src="img_avatar2.png" alt="Avatar" class="avatar">
   </div>
 
   <div class="container">
     <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="a" required>
+    <input type="text" placeholder="Enter Username" name="email" required>
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="b" required>
+    <input type="password" placeholder="Enter Password" name="password" required>
 
     <button type="submit">Login</button>
     <label>
@@ -29,5 +32,6 @@
     <span class="psw"> <a href="SignUp.html">SignUp?</a></span>
   </div>
 </form>
+<script src="Resorces/Js/Login.js"></script>
 </body>
 </html>
