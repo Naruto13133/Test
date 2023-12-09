@@ -22,7 +22,9 @@
 	for(int i=0; i==0;i=i+0) {
 		String str = sessionParameters.nextElement();
 		boolean b= str.equals("origin");
+		System.out.println(str);
 		if(b) {
+			System.out.println("origin present");
 			originFromLogin = true;
 			break;
 		}else if(! sessionParameters.hasMoreElements()) {
@@ -30,6 +32,8 @@
 			
 		}
 	}
+	
+	 base64Image = (String) request.getAttribute("base64Image");
 	if(! originFromLogin){
 	%>
 	<img id="qrCodeImage" alt="Qrcode"><br><br>

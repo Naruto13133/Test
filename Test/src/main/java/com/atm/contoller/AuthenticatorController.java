@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
 import com.atm.dao.TwoStepAuthDao;
@@ -27,91 +26,94 @@ public class AuthenticatorController extends HttpServlet {
 	protected void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException{
 		User daoAuth=new User();
 		TwoStepAuthDao twoStepAuthDao = new TwoStepAuthDao();
-		
+		boolean isauthenticated = true;
 		String  secketkey="";
+		boolean originFromLogin = false;
+		
 		HttpSession session= req.getSession();
 		long sessionCreatedAt = session.getCreationTime();
 		String email = (String) session.getAttribute("email");
 		String phone = (String) session.getAttribute("phone");
-		boolean originFromLogin = false;
+		System.out.println("email:"+email
+				+ "\n phone:"+phone);
+		try{
+			int i = daoAuth.isAuthenticated(email, phone );
+			if(i == 0) {
+				isauthenticated = false;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		Enumeration<String> a = session.getAttributeNames();
 		
-		for(int i=0; i==0;i=i+0) {
+		for(int i=0; i==0; i=i+0) {
+			if(!a.hasMoreElements() ) {
+				break;
+			}else {
 			boolean b= a.nextElement().equals("origin");
 			System.out.println("b:"+b);
-			if(b) {
-				originFromLogin = true;
 				System.out.println("origin in for loop b:"+originFromLogin);
-				break;
-			}else if(! a.hasMoreElements()) {
-				break;
-			}
-		}
-		System.out.println("before timer");
-		System.out.println("origin:" + originFromLogin);
-		// Athentication is valid till 4 minute before creation of session
-		if(sessionCreatedAt > 240000 && ! originFromLogin )  {
-			System.out.println("In side the signupp");
-			try {
-				System.out.println("email:"+email);
-				int i = daoAuth.isAuthenticated(email, phone);
-				if(i == 1) {
-					System.out.println("Test1");
-					secketkey = twoStepAuthDao.getSecureHashUsingEmailnPohne(email, phone);
-					System.out.println(secketkey);
-				}else {
-					if( new TwoStepAuthDao().updateAuthenticationStatus(email, phone)) {
-					}else {
-						res.sendRedirect("/Test?athnt=false");
-					}
+				if(b) {
+					originFromLogin = true;
 				}
 			}
-			catch (SQLException e) {
+		}
+		
+		System.out.println("before timer");
+		System.out.println("origin:" + originFromLogin);
+		System.out.println();
+		// Athentication is valid till 4 minute before creation of session
+		if(sessionCreatedAt > 240000 && ! originFromLogin && !isauthenticated)  {
+			System.out.println("In side the signupp");
+			try {
+				secketkey = twoStepAuthDao.getSecureHashUsingEmailnPohne(email, phone);
+				System.out.println("email:"+email);
+				System.out.println("secketkey:"+secketkey);
+					new TwoStepAuthDao().updateAuthenticationStatus(email, phone);
+					isauthenticated = true;
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 			
 		String OTP = (String) req.getParameter("otp");
 		String userOTP = TwoStepVerificationService.getTOTPCode(secketkey);
-			if(OTP.equals(userOTP)) {
-				
+			if(OTP.equals(userOTP) && isauthenticated) {
 				res.sendRedirect("/Test?athnt=true");
-			}
-			else {
-				res.sendRedirect("/Test?athnt=false");
-			}
-		}//For Login User Authentiction
-		else if (originFromLogin) {
-			System.out.println("In side the origin!");
-			try {
-				System.out.println("email:"+email);
-
-				int i = daoAuth.isAuthenticated(email, phone );
-				if(i == 1) {
-					System.out.println("Test2");
-					
-					secketkey = twoStepAuthDao.getSecureHashUsingEmailnPohne(email, phone);
-					
-					if ( 1 !=  daoAuth.isAuthenticated(email, phone)) {
-						res.sendRedirect("/Test?athnt=false");
-					}
-					//sucssess page
+			}else {
+				res.sendRedirect("/Test?athnt=false");	
 				}
 			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
+		else if (originFromLogin && isauthenticated) {
+			System.out.println("In side the origin!");
+			
+				System.out.println("email:"+email);
+				try {
+					
+						System.out.println("Test2");
+						
+						secketkey = twoStepAuthDao.getSecureHashUsingEmailnPohne(email, phone);
+						
+						if (!isauthenticated) {
+							res.sendRedirect("/Test?athnt=false");
+						}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			
 		String OTP = (String) req.getParameter("otp");
 		String userOTP = TwoStepVerificationService.getTOTPCode(secketkey);
 			if(OTP.equals(userOTP)) {
-				res.sendRedirect("/Test?athnt=true");
+				res.sendRedirect("/Test/DoshaSurvey.jsp?athnt=true");
 			}else {
 				res.sendRedirect("/Test?athnt=false");
 			}
-		}else{
-			res.sendRedirect("/Test?athnt=false");
 		}
+	}}
 		
 		
-	}
+	
 
-}
+

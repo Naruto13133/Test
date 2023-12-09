@@ -101,7 +101,7 @@ public class SignUpp extends HttpServlet {
 			   response.sendRedirect("/Test/SignUp.html?userpresent=true");
 		   }	
 	   }
-	   catch (SQLException | NullPointerException e) {
+	   catch (Exception e) {
 			e.printStackTrace();
 	   }
 	   finally {

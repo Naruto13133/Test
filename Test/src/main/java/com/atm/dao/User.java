@@ -149,13 +149,15 @@ public class User {
 	public int isAuthenticated(String email, String phone ) throws SQLException{
 		Connection con = dbconfig.GetMysqlCon();
 		int i=0;
-		String query="Select (IFNULL(is_authenticated, 'N')) as auth "
+		String query="Select * "
 					+ "from ayurveda.patient  "
-					+ "where  email = \'"+email+"\' and is_authenticated = 'Y' ";
+					+ "where  email = ? and is_authenticated = 'Y' and phone_number = ? ";
 			System.out.println("query:");		
-			Statement  statement = con.createStatement();
+			PreparedStatement  statement = con.prepareStatement(query);
+			statement.setString(1, email);
+			statement.setString(2, phone);
+			ResultSet rs = statement.executeQuery();
 		try {
-			ResultSet rs=statement.executeQuery(query);
 			if (rs.next()) {
 			    i=1;
 			} else {
@@ -174,19 +176,27 @@ public class User {
 
 	public boolean isUserPresent( String email) throws SQLException {
 		Connection con = dbconfig.GetMysqlCon();
-		boolean result = true;
+		boolean result = false;
 		String sql = "select email from ayurveda.patient where email = ? ";
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, email);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				if(email.equals(rs.getString("email")))
+				{
+					result = true;
+				}
+			}
+			
 		}catch(Exception e) {
 			result = false;
-			con.rollback();
 			e.printStackTrace();
 		}finally {
 			con.close();
 		}
-		return result;
+		return result; 
 	}
 	
 	public Patient getPatiest( String email) throws SQLException{

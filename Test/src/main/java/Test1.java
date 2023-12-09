@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,10 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 
 import com.atm.config.DBConfig;
+import com.atm.dao.DoshaDao;
 import com.atm.dao.TwoStepAuthDao;
+import com.atm.pojo.AnswersPojo;
+import com.atm.pojo.DoshaSurveyQuestionPojo;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -137,18 +141,23 @@ public class Test1 {
 		
 //		boolean a=new TwoStepAuthDao().storeSecureHashUsingEmailnPhone("atul@123.gmail.c","08828554466", "QCNXPDVBBWQF7WG2SZ3UZ7UTBORNUQ6J");
 //		System.out.println(a);
-		Test1 g=new Test1();
-		DBConfig dbconfig=new DBConfig();
-		Connection con=dbconfig.GetMysqlCon();
-		Map<String, String> name=g.getPatientMailAdressAndName(con,"jforxcea@gmail.com","atul MOurya");
-		String autData=g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullName"));
-		
-		System.out.println(g.generateSecretKey());
-		System.out.println(g.getTOTPCode(Test1.SECRETE_KEY));
-		System.out.println(name);
-		g.getTOTPCode(SECRETE_KEY);
-		g.createQRCode(name.get("fullName"),autData,"",500,500);
-		System.out.println(g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullName")));
+//		Test1 g=new Test1();
+//		DBConfig dbconfig=new DBConfig();
+//		Connection con=dbconfig.GetMysqlCon();
+//		Map<String, String> name=g.getPatientMailAdressAndName(con,"jforxcea@gmail.com","atul MOurya");
+//		String autData=g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullName"));
+//		
+//		System.out.println(g.generateSecretKey());
+//		System.out.println(g.getTOTPCode(Test1.SECRETE_KEY));
+//		System.out.println(name);
+//		g.getTOTPCode(SECRETE_KEY);
+//		g.createQRCode(name.get("fullName"),autData,"",500,500);
+//		System.out.println(g.getGoogleAuthenticatorBarCode(SECRETE_KEY, name.get("mail"), name.get("fullName")));
+
+//		DoshaDao dd = new DoshaDao();
+//		ArrayList<DoshaSurveyQuestionPojo> dss = dd.getAllQuestion();
+//		System.out.println("dss:"+dss);
+	
 	}
 
 }

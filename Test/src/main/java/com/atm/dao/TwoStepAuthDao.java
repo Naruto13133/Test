@@ -4,18 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
-import com.atm.service.*;
-
-import org.apache.tomcat.jakartaee.commons.lang3.StringUtils;
 
 import com.atm.config.DBConfig;
 
 public class TwoStepAuthDao {
 
 	static DBConfig dbConfig = new DBConfig();
-	
 	
 	public String getSecureHashUsingEmailnPohne(String email, String phone ) throws SQLException {
 		String secure_hash=""; 
@@ -29,7 +23,7 @@ public class TwoStepAuthDao {
 		
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
-				secure_hash = rs.getString("secure_hash");	
+				secure_hash = rs.getString("secure_hash");
 				}
 			}
 		catch (SQLException | NullPointerException e1) {
@@ -67,12 +61,17 @@ public class TwoStepAuthDao {
 	}
 	public Boolean updateAuthenticationStatus(String email, String phone) throws SQLException {
 		Connection con = dbConfig.GetMysqlCon();
-		String sql = "update is_authenticated = Y from ayurveda.patient where  phone_number = ? and email = ? ";
-		boolean result = true;
+		String sql = "UPDATE `ayurveda`.`patient` SET `is_authenticated` = 'Y' where  email = ? and  phone_number = ?  ";
+		boolean result = false;
 		try {
+			con.setAutoCommit(false);
 			PreparedStatement S = con.prepareStatement(sql);
 				S.setString(1, email);
 				S.setString(2, phone);
+			int rs = S.executeUpdate();
+			if(rs == 1) {
+				result =true ;
+			}
 		}
 		catch (SQLException | NullPointerException e) {
 			// TODO Auto-generated catch block
@@ -80,6 +79,7 @@ public class TwoStepAuthDao {
 			e.printStackTrace();
 			result = false;
 		}finally {
+			con.commit();
 			con.close();
 		}
 		return result;
